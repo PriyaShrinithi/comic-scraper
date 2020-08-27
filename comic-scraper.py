@@ -31,7 +31,11 @@ def get_page(ch_no):
         pg_links = soup.find(id='main').find('script')
         pg_links = str(pg_links)
         pages = pg_links.split('[')
-        pages = pages[2].split('=')
+        try:
+            pages = pages[2].split('=')
+        except:
+            print('Check for continuity errors')
+            exit()
         pages = pages[0].split(']')
         pages = pages[0]
         pages = pages.split('},')
@@ -48,7 +52,7 @@ def get_page(ch_no):
                 page_path = 'https:'+pg
                 download_page(page_path, pg_no, ch_path)
             pg_no+=1
-        get_page(ch_no+1)
+            get_page(ch_no+1)
         
 
 def download_page(page_path, pg_no, ch_path):
@@ -69,6 +73,6 @@ def download_page(page_path, pg_no, ch_path):
     else:
         print('File Exists')
     
-get_page(27)
+get_page(132)
 print('Done')
 # DND, except to alter if value and clean the final pg
