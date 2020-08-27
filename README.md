@@ -11,12 +11,13 @@ A Command Line Application to download manga as jpg files
        5. Download in the mentioned folder: Done
        6. Download each chapter in a specific folder: Done
        7. If file exists don't download: Done
+       8. Redo if Download error: Done
        
    ###### NOT DONE:
-       8. Write downloaded details in a csv file or as a json object: *idea in contemplation*
-       9. Error Handling: 
-       10. Create a proper end scenario: 
-       11. Cost Calculation:
-       12. Figure out ways to reduce the cost: 
-       13. Handle Continuation Issues:
+       9. Write downloaded details in a csv file or as a json object: *idea in contemplation*
+       10. Error Handling: 
+       11. Create a proper end scenario: 
+       12. Cost Calculation:
+       13. Figure out ways to reduce the cost: 
+       14. Handle Continuation Issues:
 
