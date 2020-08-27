@@ -11,7 +11,7 @@ false = False
 pages = set()
 page = set()
 chapters = set()
-comic_path = 'https://www.mangareader.net/onepunch-man/'
+comic_path = 'https://www.mangareader.net/shingeki-no-kyojin/'
 #upon updates receive url or last part of url from user
 
 drive =  'D:'
@@ -58,15 +58,17 @@ def download_page(page_path, pg_no, ch_path):
     if not os.path.exists(filename):
         req = requests.get(page_path, stream = true)
         req.raw.decode_content = true
-        with open(filename, 'wb') as f:
-            shutil.copyfileobj(req.raw, f)
         if req.status_code == 200:
+            with open(filename, 'wb') as f:
+                shutil.copyfileobj(req.raw, f)
             print('Download Successful!')
         else:
             print(req.status_code)
+            print('Downloading Again...')
+            download_page(page_path, pg_no, ch_path)
     else:
         print('File Exists')
     
-get_page(1)
+get_page(27)
 print('Done')
 # DND, except to alter if value and clean the final pg
