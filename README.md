@@ -18,4 +18,5 @@ A Command Line Application to download manga as jpg files
        10. Create a proper end scenario: 
        11. Cost Calculation:
        12. Figure out ways to reduce the cost: 
+       13. Handle Continuation Issues:
 
