@@ -7,11 +7,10 @@ import shutil
 
 true = True
 false = False
-
 pages = set()
 page = set()
 chapters = set()
-comic_path = 'https://www.mangareader.net/shingeki-no-kyojin/'
+comic_path = 'https://www.mangareader.net/one-piece'
 #upon updates receive url or last part of url from user
 
 drive =  'D:'
@@ -22,11 +21,28 @@ parent_path = os.path.join(drive, comic_directory, manga_directory)
 
 if not os.path.exists(parent_path):
     os.mkdir(parent_path)
-    
+
+
+
+chap = list()
+
+def get_chapters():
+        comic = urllib.request.urlopen(comic_path)
+        soup = BeautifulSoup(comic, 'html.parser')
+        ch_links = soup.find(class_='d48').findChildren('a')
+        for link in ch_links:
+            if 'href' in link.attrs:
+                if link['href'] not in chap:
+                    new_chapter = link.attrs['href'].split('/')[-1]
+                    chap.append(new_chapter)
+                    
 def get_page(ch_no):
+    if str(ch_no) not in chap:
+        print('Done!')
+        exit()
     if ch_no not in chapters:
         chapters.add(ch_no)
-        comic = urllib.request.urlopen(comic_path+str(ch_no))
+        comic = urllib.request.urlopen(comic_path+'/'+str(ch_no))
         soup = BeautifulSoup(comic, 'html.parser')
         pg_links = soup.find(id='main').find('script')
         pg_links = str(pg_links)
@@ -34,8 +50,8 @@ def get_page(ch_no):
         try:
             pages = pages[2].split('=')
         except:
-            print('Check for continuity errors')
-            exit()
+            print('Checking for continuity errors...')
+            get_page(ch_no+1)    
         pages = pages[0].split(']')
         pages = pages[0]
         pages = pages.split('},')
@@ -44,17 +60,16 @@ def get_page(ch_no):
         for pg in pages:
             if '}' not in pg:
                 pg = pg+'}'
-            pg = eval(pg)
-            pg = pg['u']
-            pg = pg.replace('\\', '') # to clean the link url
-            if pg not in page:
-                page.add(pg)
-                page_path = 'https:'+pg
-                download_page(page_path, pg_no, ch_path)
-            pg_no+=1
-            get_page(ch_no+1)
-        
-
+                pg = eval(pg)
+                pg = pg['u']
+                pg = pg.replace('\\', '') # to clean the link url
+                if pg not in page:
+                    pg = 'https:'+pg
+                    download_page(pg, pg_no, ch_path)
+                    page.add(pg)
+                pg_no+=1
+        get_page(ch_no+1)
+            
 def download_page(page_path, pg_no, ch_path):
     if not os.path.exists(ch_path):
         os.mkdir(ch_path)
@@ -68,11 +83,13 @@ def download_page(page_path, pg_no, ch_path):
             print('Download Successful!')
         else:
             print(req.status_code)
-            print('Downloading Again...')
+            print('ch: '+ch_path+' pg: '+str(pg_no)+' Downloading Again...')
             download_page(page_path, pg_no, ch_path)
     else:
         print('File Exists')
+
+#def get_page_url(pg_no):
     
-get_page(132)
-print('Done')
+get_chapters()
+get_page(987)
 # DND, except to alter if value and clean the final pg
