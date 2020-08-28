@@ -10,7 +10,7 @@ false = False
 pages = set()
 page = set()
 chapters = set()
-comic_path = 'https://www.mangareader.net/one-piece'
+comic_path = 'https://www.mangareader.net/one-piece/'
 #upon updates receive url or last part of url from user
 
 drive =  'D:'
@@ -18,7 +18,7 @@ drive =  'D:'
 comic_directory = 'Comics'
 manga_directory = comic_path.split('/')[-2]
 parent_path = os.path.join(drive, comic_directory, manga_directory)
-
+print(manga_directory)
 if not os.path.exists(parent_path):
     os.mkdir(parent_path)
 
@@ -92,4 +92,4 @@ def download_page(page_path, pg_no, ch_path):
     
 get_chapters()
 get_page(987)
-# DND, except to alter if value and clean the final pg
+# DND, except chapter number and mangalink
