@@ -12,7 +12,7 @@ false = False
 pages = set()
 page = set()
 chapters = set()
-comic_path = 'https://www.mangareader.net/acmagame'
+comic_path = 'https://www.mangareader.net/kingdom'
 
 comic = urllib.request.urlopen(comic_path)
 soup = BeautifulSoup(comic, 'html.parser')
@@ -51,7 +51,10 @@ def get_chapters():
 def get_chapter(ch_no):
     tic_ = time.time()
     try:
-        ch = chap[ch_no - 1]
+        if str(ch_no) not in chap:
+            ch = chap[ch_no - 1]
+        else:
+            ch = ch_no
     except:
         print('Done!')
         exit()
@@ -109,7 +112,7 @@ def download_page(page_path, pg_no, ch_path):
         else:
             print(req.status_code)
             print('ch: '+ch_path+' pg: '+str(pg_no)+' Downloading Again...')
-            tqdm(download_page(page_path, pg_no, ch_path))
+            download_page(page_path, pg_no, ch_path)
     else:
         print('File Exists')
     toc_ = time.time()
@@ -118,7 +121,7 @@ def download_page(page_path, pg_no, ch_path):
 #def get_page_url(pg_no):
     
 get_chapters()
-tqdm(get_chapter(1))
+tqdm(get_chapter(628))
 toc = time.time()
 print('comic-scraper: ',(toc-tic)*1000, ' ms')
 # DND, except chapter number and mangalink
