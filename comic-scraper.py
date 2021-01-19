@@ -1,16 +1,17 @@
 import os
 import shutil
 import time
-
+import sys
 import numpy as np
 import requests
 import shared as sh
 
+_try = False
 true = True
 false = False
+recursion = 500
 
-global soup
-
+sys.setrecursionlimit(10000)
 
 def get_manga_name(manga, chapter):
     comic_path = 'https://img.mghubcdn.com/file/imghub'
@@ -26,18 +27,21 @@ def get_chapter(comic_path, chapter):
     comic_path += '/' + str(chapter)
     get_page(comic_path, 1, chapter)
     print(comic_path, chapter)
-    print("Chapter: " + chapter)
+    print("Chapter: " + str(chapter))
 
 
 def get_page(comic_path, page, chapter):
+    c = len(comic_path.split('/'))
+    if c<7:
+        print("Fetching New Chapter... Please Wait1"+'\n')
+        get_chapter(comic_path, chapter+1)
     comic_path += '/' + str(page) + '.jpg'
-    print(comic_path)
     download_page(chapter, page, comic_path)
 
 
+global d
+d= 0
 def download_page(chapter, page, comic_path):
-    global d
-    d = 0
     headers = {
         "User-Agent": "Mozilla/5.0 (Linux; U; Android 4.2.2; he-il; NEO-X5-116A Build/JDQ39) AppleWebKit/534.30 ("
                       "KHTML, like Gecko) Version/4.0 Safari/534.30"}
@@ -45,11 +49,11 @@ def download_page(chapter, page, comic_path):
     print(response.status_code)
     if response.status_code == 404:
         if page != 1:
-            comic_path = comic_path.split('/')[:-3]
+            comic_path = comic_path.split('/')[:-2]
             comic_path = '/'.join(comic_path)
-            get_chapter(comic_path, chapter + 1)
+            print("Retrying... Please Wait!"+'\n')
+            get_page(comic_path, page, chapter)
         else:
-            # delete last made directory and exit
             exit()
     else:
         chap = sh.chapter_directory(chapter)
@@ -66,9 +70,12 @@ def download_page(chapter, page, comic_path):
         comic_path = '/'.join(comic_path)
         get_page(comic_path, page + 1, chapter)
         d += 1
-        if d % 50 == 0:
-            delay = np.random.random(1000000)
+        if d % 20 == 0:
+            delay = np.random.random(1000)*1000
+            print("Delay for "+delay+" ms")
             time.sleep(delay)
+        print('\n')
 
 
-get_manga_name("hajime-no-ippo", chapter=1)
+
+get_manga_name("hajime-no-ippo", chapter=588)
