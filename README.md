@@ -15,9 +15,9 @@ A Command Line Application to download manga as jpg files
        9. Handle Continuation Issues: Done
        10. Create a proper end scenario: Done
        11. Error Handling: Done
-       12  Figure out ways to reduce the cost: using tqdm, bu need to know what kind of stress the library imposes on the system
-       
+       12. Cost Calculation: O(chapters*pages)
    ###### NOT DONE:
-       13. Cost Calculation:
-       14. Write downloaded details in a csv file or as a json object: 
+       13. Write downloaded details in a csv file or as a json object: 
+       14. Finding Outliers:
+       15. Manga names in Sentence case
 
