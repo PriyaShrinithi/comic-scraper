@@ -16,8 +16,10 @@ A Command Line Application to download manga as jpg files
        10. Create a proper end scenario: Done
        11. Error Handling: Done
        12. Cost Calculation: O(chapters*pages)
+       
    ###### NOT DONE:
        13. Write downloaded details in a csv file or as a json object: 
        14. Finding Outliers:
        15. Manga names in Sentence case
-
+       16. Comments
+       17. Make the Console Output pretty
