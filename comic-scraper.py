@@ -4,106 +4,78 @@ from bs4 import BeautifulSoup
 import urllib.request
 import requests
 import shutil
-import tqdm
+import json
+import shared as sh
 
-tic = time.time()
 true = True
 false = False
-pages = set()
-page = set()
-chapters = set()
-comic_path = 'https://www.mangareader.net/kingdom'
 
-comic = urllib.request.urlopen(comic_path)
-soup = BeautifulSoup(comic, 'html.parser')
-#upon updates receive url or last part of url from user
+global soup
+headers = {"User-Agent": "Mozilla/5.0 (Linux; U; Android 4.2.2; he-il; NEO-X5-116A Build/JDQ39) AppleWebKit/534.30 ("
+                         "KHTML, like Gecko) Version/4.0 Safari/534.30"}
 
-drive =  'D:'
-#upon updates, receive the drive from user
-comic_directory = 'Comics'
-manga_directory = soup.find(class_='d40').text.split(' Manga')[0]
-parent_directory = os.path.join(drive, comic_directory, manga_directory)
-print(manga_directory)
+def get_manga_name(manga, chapter):
+    comic_path = 'https://img.mghubcdn.com/file/imghub'
+    comic_path += '/' + manga
+    print(comic_path)
+    sh.main_directory(comic_path)
+    get_chapter(comic_path, chapter)
 
-if not os.path.exists(parent_directory):
-    try:
-        os.mkdir(parent_directory)
-    except:
-        manga_directory = ' '.join(manga_directory.split(':'))    
-        parent_directory = os.path.join(drive, comic_directory, manga_directory)
-        if not os.path.exists(parent_directory):
-            os.mkdir(parent_directory)
-    
-chap = list()
 
-def get_chapters():
-    tic_ = time.time()
-    #comic = urllib.request.urlopen(comic_path)
-    ch_links = soup.find(class_='d48').findChildren('a')
-    for link in ch_links:
-        if 'href' in link.attrs:
-            if link['href'] not in chap:
-                new_chapter = link.attrs['href'].split('/')[-1]
-                chap.append(new_chapter)
-    toc_ = time.time()
-    print('get chapters: ',(toc_ - tic_)*1000, ' ms')
+def get_chapter(comic_path, chapter):
+    # check if folder is available
+    # else
+    comic_path += '/' + str(chapter)
+    get_page(comic_path, 1, chapter)
+    print(comic_path, chapter)
+    print("Chapter: "+chapter)
 
-def get_chapter(ch_no):
-    tic_ = time.time()
-    try:
-        if str(ch_no) not in chap:
-            ch = chap[ch_no - 1]
+
+def get_page(comic_path, page, chapter):
+    comic_path += '/' + str(page) + '.jpg'
+    print(comic_path)
+    download_page(chapter, page, comic_path)
+
+
+def download_page(chapter, page, comic_path):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Linux; U; Android 4.2.2; he-il; NEO-X5-116A Build/JDQ39) AppleWebKit/534.30 ("
+                      "KHTML, like Gecko) Version/4.0 Safari/534.30"}
+    response = requests.get(comic_path, stream=true)
+    print(response.status_code)
+    if response.status_code == 404:
+        if page != 1:
+            comic_path = comic_path.split('/')[:-2]
+            comic_path = '/'.join(comic_path)
+            get_chapter(comic_path, chapter + 1)
         else:
-            ch = ch_no
-    except:
-        print('Done!')
-        exit()
-        
-    if str(ch) in chap:
-        get_page(ch, ch_no)
-        
-def get_page(ch, chap_index):    
-    if ch not in chapters:
-        chapters.add(ch)
-        comic = urllib.request.urlopen(comic_path+'/'+str(ch))
-        soup = BeautifulSoup(comic, 'html.parser')
-        pg_links = soup.find(id='main').find('script')
-        pg_links = str(pg_links)
-        pages = pg_links.split('[')
-        try:
-            pages = pages[2].split('=')
-        except:
-            print('Checking for continuity errors...')
-            get_chapter(chap_index+1)
-        pages = pages[0].split(']')
-        pages = pages[0]
-        pages = pages.split('},')
-        ch_path = os.path.join(parent_directory, str(ch))
-        pg_no = 1
-        
-        for pg in pages:
-            if '}' not in pg:
-                pg = pg+'}'
-                pg = eval(pg)
-                pg = pg['u']
-                pg = pg.replace('\\', '') # to clean the link url
-                if pg not in page:
-                    pg = 'https:'+pg
-                    download_page(pg, pg_no, ch_path)
-                    page.add(pg)
-            pg_no+=1
-        get_chapter(chap_index+1)
-    toc_ = time.time()
-    print('get page: ', (toc_ - tic_)*1000, ' ms')
-            
+        # delete last made directory and exit
+            exit()
+    else:
+        chap = sh.chapter_directory(chapter)
+        filename = os.path.join(chap, str(page)+'.jpg')
+        print(filename)
+        if os.path.exists(filename):
+            get_page(comic_path, page+1, chapter)
+        else:
+            response.raw.decode_content = true
+            with open(filename, 'wb') as f:
+                shutil.copyfileobj(response.raw, f)
+            print('Download Successful!')
+        comic_path = comic_path.split('/')[:-1]
+        comic_path = '/'.join(comic_path)
+        get_page(comic_path, page + 1, chapter)
+    '''
+
+
 def download_page(page_path, pg_no, ch_path):
     print(ch_path)
     tic_ = time.time()
     if not os.path.exists(ch_path):
         os.mkdir(ch_path)
-    filename = os.path.join(ch_path, str(pg_no)+'.jpg')
+    filename = os.path.join(ch_path, str(pg_no) + '.jpg')
     if not os.path.exists(filename):
-        req = requests.get(page_path, stream = true)
+        req = requests.get(page_path, stream=true)
         req.raw.decode_content = true
         if req.status_code == 200:
             with open(filename, 'wb') as f:
@@ -111,17 +83,12 @@ def download_page(page_path, pg_no, ch_path):
             print('Download Successful!')
         else:
             print(req.status_code)
-            print('ch: '+ch_path+' pg: '+str(pg_no)+' Downloading Again...')
+            print('ch: ' + ch_path + ' pg: ' + str(pg_no) + ' Downloading Again...')
             download_page(page_path, pg_no, ch_path)
     else:
         print('File Exists')
     toc_ = time.time()
-    print('download page: ',(toc_ - tic_)*1000)
+    print('download page: ', (toc_ - tic_) * 1000)'''
 
-#def get_page_url(pg_no):
-    
-get_chapters()
-tqdm(get_chapter(628))
-toc = time.time()
-print('comic-scraper: ',(toc-tic)*1000, ' ms')
-# DND, except chapter number and mangalink
+
+get_manga_name("one-piece", chapter=1001)
