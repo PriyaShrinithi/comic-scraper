@@ -58,7 +58,7 @@ def get_page(comic_path, page, chapter):
         if page != 1:
             comic_path = comic_path.split('/')[:-2]
             comic_path = '/'.join(comic_path)
-            print("Retrying... Please Wait!" + '\n')
+            print('\nRetrying... Please Wait!\n')
             get_page(comic_path, page, chapter)
         else:
             exit()
@@ -71,15 +71,16 @@ def download_page(chapter, page, comic_path, response):
     filename = os.path.join(chap, str(page) + '.jpg')
     print(filename)
     if os.path.exists(filename):
+        print('\n Page exists... Retriveing next page...!')
         get_page(comic_path, page + 1, chapter)
     else:
         response.raw.decode_content = true
         with open(filename, 'wb') as f:
             shutil.copyfileobj(response.raw, f)
         print('Download Successful!')
-        comic_path = comic_path.split('/')[:-1]
-        comic_path = '/'.join(comic_path)
-        get_page(comic_path, page + 1, chapter)
+    comic_path = comic_path.split('/')[:-1]
+    comic_path = '/'.join(comic_path)
+    get_page(comic_path, page + 1, chapter)
 
 
 get_manga_name("jujutsu-kaisen", chapter=1)
