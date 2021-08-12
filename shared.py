@@ -10,7 +10,7 @@ class shared:
 def main_directory(link):
     global manga_directory
     global parent_directory
-    drive = 'D:'
+    drive = 'F:'
     comic_directory = 'Comics'
 
     soup = BeautifulSoup

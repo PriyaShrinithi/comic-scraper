@@ -38,10 +38,7 @@ def get_page(comic_path, page, chapter):
         print("Fetching New Chapter... Please Wait1" + '\n')
         get_chapter(comic_path, chapter + 1)
     comic_path += '/' + str(page) + '.jpg'
-    download_page(chapter, page, comic_path)
-
-
-def download_page(chapter, page, comic_path):
+    #download_page(chapter, page, comic_path)
     global d
     headers = {
         "User-Agent": "Mozilla/5.0 (Linux; U; Android 4.2.2; he-il; NEO-X5-116A Build/JDQ39) AppleWebKit/534.30 ("
@@ -66,19 +63,23 @@ def download_page(chapter, page, comic_path):
         else:
             exit()
     else:
-        chap = sh.chapter_directory(chapter)
-        filename = os.path.join(chap, str(page) + '.jpg')
-        print(filename)
-        if os.path.exists(filename):
-            get_page(comic_path, page + 1, chapter)
-        else:
-            response.raw.decode_content = true
-            with open(filename, 'wb') as f:
-                shutil.copyfileobj(response.raw, f)
-            print('Download Successful!')
+        download_page(chapter, page, comic_path, response)
+
+
+def download_page(chapter, page, comic_path, response):
+    chap = sh.chapter_directory(chapter)
+    filename = os.path.join(chap, str(page) + '.jpg')
+    print(filename)
+    if os.path.exists(filename):
+        get_page(comic_path, page + 1, chapter)
+    else:
+        response.raw.decode_content = true
+        with open(filename, 'wb') as f:
+            shutil.copyfileobj(response.raw, f)
+        print('Download Successful!')
         comic_path = comic_path.split('/')[:-1]
         comic_path = '/'.join(comic_path)
         get_page(comic_path, page + 1, chapter)
 
 
-get_manga_name("hajime-no-ippo", chapter=588)
+get_manga_name("jujutsu-kaisen", chapter=1)
