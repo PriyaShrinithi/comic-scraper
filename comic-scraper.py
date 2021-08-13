@@ -51,7 +51,7 @@ def get_page(comic_path, page, chapter):
         delay_exec()
         response = requests.get(comic_path, stream=true, headers=headers)
         print('\nresponse stautus code: ',response.status_code,'\n')
-        
+        print('\ncomic path: ', comic_path)        
         if response.status_code == 404:
             comic_path = '.'.join(comic_path.split('.')[:-1])
             response_post_ext = check_extensions(comic_path, headers, filename)
