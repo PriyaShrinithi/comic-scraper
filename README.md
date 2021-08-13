@@ -17,7 +17,8 @@ A Command Line Application to download manga as jpg files
        11. Error Handling: Done
        12. Redo if Download error: Done
        13. Make the Console Output pretty
+       14. Extension change 
    ###### NOT DONE:
-       14. Write downloaded details in a csv file or as a json object: 
-       15. Argument Manga names in Sentence case 
-       16. Comments
+       15. Write downloaded details in a csv file or as a json object: 
+       16. Argument Manga names in Sentence case 
+       17. Comments
