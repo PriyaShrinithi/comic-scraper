@@ -97,7 +97,7 @@ def check_extensions(comic_path, headers, filename):
     comic_path_jpg = comic_path+'.jpg'
     comic_path_d = ''
     while dummy < 2:
-        if dummy % 2 == 0:
+        if dummy == 0:
             comic_path_d = comic_path_png
         else:
             comic_path_d = comic_path_jpg
@@ -112,4 +112,4 @@ def check_extensions(comic_path, headers, filename):
         print('\nresponse status code after extension change: ',response.status_code,'\n')
         return response.status_code
     
-get_manga_name('jujutsu-kaisen', chapter=88)
+get_manga_name('hajime-no-ippo', chapter=176)
